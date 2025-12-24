@@ -117,4 +117,12 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     {
         return $this->isDoctor() && $this->doctorProfile?->is_verified;
     }
+
+    /**
+     * Send the password reset notification.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new \App\Notifications\ResetPasswordNotification($token));
+    }
 }
