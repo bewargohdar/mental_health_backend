@@ -24,6 +24,8 @@ class PostResource extends Resource
             ->schema([
                 Forms\Components\Section::make()
                     ->schema([
+                        Forms\Components\Hidden::make('user_id')
+                            ->default(fn () => auth()->id()),
                         Forms\Components\TextInput::make('title')
                             ->required()
                             ->maxLength(255),
@@ -40,7 +42,8 @@ class PostResource extends Resource
                                 'general' => 'General',
                             ]),
                         Forms\Components\Toggle::make('is_approved')
-                            ->label('Approved'),
+                            ->label('Approved')
+                            ->default(true),
                         Forms\Components\Toggle::make('is_anonymous'),
                     ])
                     ->columns(2),
