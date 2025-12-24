@@ -15,10 +15,11 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use App\Models\Traits\SerializesLocalTimezone;
 
 class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
-    use HasFactory, Notifiable, HasApiTokens, HasRoles, LogsActivity;
+    use HasFactory, Notifiable, HasApiTokens, HasRoles, LogsActivity, SerializesLocalTimezone;
 
     protected $fillable = [
         'name',
@@ -31,6 +32,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         'is_active',
         'privacy_settings',
         'email_verified_at',
+        'remember_token',
     ];
 
     protected $hidden = [

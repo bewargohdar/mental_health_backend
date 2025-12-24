@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Enums\MoodType;
+use App\Models\Traits\SerializesLocalTimezone;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MoodEntry extends Model
 {
-    use HasFactory;
+    use HasFactory, SerializesLocalTimezone;
 
     protected $fillable = [
         'user_id',
