@@ -21,7 +21,8 @@ class RegisterController extends BaseApiController
                 'password' => $request->password,
                 'phone' => $request->phone,
                 'date_of_birth' => $request->date_of_birth,
-                'email_verified_at' => now(), // Auto-verify on registration
+                'email_verified_at' => now(),
+                'remember_token' => \Illuminate\Support\Str::random(60),
             ]);
 
             // Assign role
