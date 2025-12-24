@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AppointmentStatus;
+use App\Models\Traits\SerializesLocalTimezone;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Crypt;
 
 class Appointment extends Model
 {
-    use HasFactory;
+    use HasFactory, SerializesLocalTimezone;
 
     protected $fillable = [
         'patient_id',
