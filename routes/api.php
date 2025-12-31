@@ -10,6 +10,10 @@ use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\ContentController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\DoctorController;
+use App\Http\Controllers\Api\ProgressController;
+use App\Http\Controllers\Api\WellnessTipController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,6 +45,20 @@ Route::prefix('content')->group(function () {
 Route::get('posts', [PostController::class, 'index']);
 Route::get('posts/{post}', [PostController::class, 'show']);
 
+// Public wellness tips
+Route::prefix('wellness-tips')->group(function () {
+    Route::get('/', [WellnessTipController::class, 'index']);
+    Route::get('random', [WellnessTipController::class, 'random']);
+    Route::get('category/{category}', [WellnessTipController::class, 'byCategory']);
+});
+
+// Public doctors listing
+Route::prefix('doctors')->group(function () {
+    Route::get('/', [DoctorController::class, 'index']);
+    Route::get('specializations', [DoctorController::class, 'specializations']);
+    Route::get('{doctor}', [DoctorController::class, 'show']);
+});
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     // Auth
@@ -54,6 +72,20 @@ Route::middleware('auth:sanctum')->group(function () {
             ->name('verification.verify');
         Route::post('email/resend', [EmailVerificationController::class, 'resend'])
             ->middleware('throttle:6,1');
+    });
+
+    // User Profile
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'show']);
+        Route::put('/', [ProfileController::class, 'update']);
+        Route::post('language/{language}', [ProfileController::class, 'updateLanguage']);
+        Route::delete('avatar', [ProfileController::class, 'deleteAvatar']);
+    });
+
+    // User Progress (for Home page)
+    Route::prefix('progress')->group(function () {
+        Route::get('weekly', [ProgressController::class, 'weekly']);
+        Route::get('overview', [ProgressController::class, 'overview']);
     });
 
     // Mood Tracking
@@ -93,7 +125,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('{appointment}/complete', [AppointmentController::class, 'complete']);
     });
 
-    // Doctor availability
+    // Doctor availability (protected - for booking)
     Route::get('doctors/{doctor}/availability', [AppointmentController::class, 'doctorAvailability']);
     Route::get('doctors/{doctor}/slots', [AppointmentController::class, 'availableSlots']);
 
@@ -112,3 +144,4 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/', [NotificationController::class, 'clear']);
     });
 });
+
