@@ -50,6 +50,14 @@ class ExerciseResource extends Resource
                         Forms\Components\TextInput::make('audio_url')
                             ->url()
                             ->label('Audio Guide URL'),
+                        Forms\Components\FileUpload::make('image_url')
+                            ->image()
+                            ->directory('exercises')
+                            ->label('Exercise Image')
+                            ->imageResizeMode('cover')
+                            ->imageCropAspectRatio('16:9')
+                            ->imageResizeTargetWidth('1280')
+                            ->imageResizeTargetHeight('720'),
                         Forms\Components\Select::make('author_id')
                             ->relationship('author', 'name')
                             ->searchable()
