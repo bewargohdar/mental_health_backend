@@ -21,6 +21,7 @@ class Exercise extends Model
         'duration',
         'difficulty',
         'audio_url',
+        'image_url',
         'is_published',
         'completions_count',
         'tags',
