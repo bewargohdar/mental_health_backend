@@ -16,7 +16,7 @@ class AppointmentPolicy
 
     public function confirm(User $user, Appointment $appointment): bool
     {
-        return $user->id === $appointment->doctor_id;
+        return $user->id === $appointment->doctor_id || $user->isAdmin();
     }
 
     public function cancel(User $user, Appointment $appointment): bool
@@ -28,6 +28,6 @@ class AppointmentPolicy
 
     public function complete(User $user, Appointment $appointment): bool
     {
-        return $user->id === $appointment->doctor_id;
+        return $user->id === $appointment->doctor_id || $user->isAdmin();
     }
 }
