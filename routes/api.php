@@ -57,6 +57,7 @@ Route::prefix('doctors')->group(function () {
     Route::get('/', [DoctorController::class, 'index']);
     Route::get('specializations', [DoctorController::class, 'specializations']);
     Route::get('{doctor}', [DoctorController::class, 'show']);
+    Route::get('{doctor}/slots', [AppointmentController::class, 'availableSlots']);
 });
 
 // Protected routes

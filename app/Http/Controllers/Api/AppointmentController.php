@@ -184,9 +184,17 @@ class AppointmentController extends BaseApiController
             return $this->error('User is not a doctor.', 404);
         }
 
+        // First check for specific date availability, then fall back to recurring day_of_week
         $availability = DoctorAvailability::where('doctor_id', $doctor->id)
-            ->where('day_of_week', $date->dayOfWeek)
             ->where('is_active', true)
+            ->where(function ($query) use ($date) {
+                $query->whereDate('specific_date', $date->toDateString())
+                    ->orWhere(function ($q) use ($date) {
+                        $q->whereNull('specific_date')
+                          ->where('day_of_week', $date->dayOfWeek);
+                    });
+            })
+            ->orderByRaw('specific_date IS NULL') // Prefer specific date over recurring
             ->first();
 
         if (!$availability) {
