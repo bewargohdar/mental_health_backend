@@ -78,7 +78,7 @@ class AppointmentResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('type')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn ($state): string => match ($state) {
                         'video' => 'info',
                         'chat' => 'success',
                         'in_person' => 'warning',
@@ -86,11 +86,12 @@ class AppointmentResource extends Resource
                     }),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'pending' => 'warning',
-                        'confirmed' => 'info',
-                        'completed' => 'success',
-                        'cancelled' => 'danger',
+                    ->formatStateUsing(fn (AppointmentStatus $state): string => $state->label())
+                    ->color(fn (AppointmentStatus $state): string => match ($state) {
+                        AppointmentStatus::PENDING => 'warning',
+                        AppointmentStatus::CONFIRMED => 'info',
+                        AppointmentStatus::COMPLETED => 'success',
+                        AppointmentStatus::CANCELLED => 'danger',
                         default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('created_at')
