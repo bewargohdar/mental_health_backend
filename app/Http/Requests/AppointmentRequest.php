@@ -15,7 +15,7 @@ class AppointmentRequest extends FormRequest
     {
         return [
             'doctor_id' => ['required', 'exists:users,id'],
-            'scheduled_at' => ['required', 'date', 'after:now'],
+            'scheduled_at' => ['required', 'date', 'after_or_equal:today'],
             'patient_notes' => ['nullable', 'string', 'max:1000'],
         ];
     }

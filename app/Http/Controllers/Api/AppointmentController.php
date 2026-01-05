@@ -211,8 +211,16 @@ class AppointmentController extends BaseApiController
 
         // Generate available slots
         $slots = [];
-        $startTime = Carbon::parse($date->toDateString() . ' ' . $availability->start_time);
-        $endTime = Carbon::parse($date->toDateString() . ' ' . $availability->end_time);
+        // Extract time portion from start_time/end_time (they may be stored as full datetime)
+        $startTimeStr = $availability->start_time instanceof \DateTime 
+            ? $availability->start_time->format('H:i:s') 
+            : $availability->start_time;
+        $endTimeStr = $availability->end_time instanceof \DateTime 
+            ? $availability->end_time->format('H:i:s') 
+            : $availability->end_time;
+        
+        $startTime = Carbon::parse($date->toDateString() . ' ' . $startTimeStr);
+        $endTime = Carbon::parse($date->toDateString() . ' ' . $endTimeStr);
 
         while ($startTime < $endTime) {
             $slotTime = $startTime->format('H:i');

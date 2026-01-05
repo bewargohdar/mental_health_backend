@@ -19,6 +19,9 @@ class DoctorController extends BaseApiController
             ->whereHas('doctorProfile', function ($q) {
                 $q->where('is_verified', true);
             })
+            ->whereHas('doctorProfile.availabilities', function ($q) {
+                $q->where('is_active', true);
+            })
             ->with(['doctorProfile', 'doctorProfile.availabilities'])
             ->where('is_active', true);
 
