@@ -7,10 +7,13 @@ enum ContentCategory: string
     case DEPRESSION = 'depression';
     case ANXIETY = 'anxiety';
     case STRESS = 'stress';
+    case PTSD = 'ptsd';
+    case BIPOLAR = 'bipolar';
+    case OCD = 'ocd';
+    case SLEEP = 'sleep';
     case RELATIONSHIPS = 'relationships';
     case SELF_CARE = 'self_care';
     case MINDFULNESS = 'mindfulness';
-    case SLEEP = 'sleep';
     case GRIEF = 'grief';
     case TRAUMA = 'trauma';
     case GENERAL = 'general';

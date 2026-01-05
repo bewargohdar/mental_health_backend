@@ -131,7 +131,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Content interactions (protected)
     Route::post('content/bookmark', [ContentController::class, 'bookmark']);
-    Route::get('bookmarks', [ContentController::class, 'bookmarks']);
+    Route::get('content/bookmarks', [ContentController::class, 'bookmarks']);
     Route::post('exercises/{exercise}/complete', [ContentController::class, 'completeExercise']);
 
     // Notifications

@@ -8,8 +8,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 class MoodController extends BaseApiController
 {
+    use AuthorizesRequests;
     public function index(Request $request): JsonResponse
     {
         $query = auth()->user()->moodEntries()

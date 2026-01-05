@@ -8,8 +8,11 @@ use App\Models\Like;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 class PostController extends BaseApiController
 {
+    use AuthorizesRequests;
     public function index(Request $request): JsonResponse
     {
         $query = Post::approved()

@@ -47,11 +47,13 @@ class ContentController extends BaseApiController
         }]);
 
         // Check bookmark status
-        $article->is_bookmarked = auth()->user()
-            ->bookmarks()
-            ->where('bookmarkable_type', Article::class)
-            ->where('bookmarkable_id', $article->id)
-            ->exists();
+        // Check bookmark status
+        $article->is_bookmarked = auth()->check()
+            ? auth()->user()->bookmarks()
+                ->where('bookmarkable_type', Article::class)
+                ->where('bookmarkable_id', $article->id)
+                ->exists()
+            : false;
 
         return $this->success($article);
     }
@@ -81,11 +83,12 @@ class ContentController extends BaseApiController
         $video->increment('views_count');
         $video->load('author:id,name');
 
-        $video->is_bookmarked = auth()->user()
-            ->bookmarks()
-            ->where('bookmarkable_type', Video::class)
-            ->where('bookmarkable_id', $video->id)
-            ->exists();
+        $video->is_bookmarked = auth()->check()
+            ? auth()->user()->bookmarks()
+                ->where('bookmarkable_type', Video::class)
+                ->where('bookmarkable_id', $video->id)
+                ->exists()
+            : false;
 
         return $this->success($video);
     }
@@ -125,11 +128,12 @@ class ContentController extends BaseApiController
                 ->exists()
             : false;
 
-        $exercise->is_bookmarked = auth()->user()
-            ->bookmarks()
-            ->where('bookmarkable_type', Exercise::class)
-            ->where('bookmarkable_id', $exercise->id)
-            ->exists();
+        $exercise->is_bookmarked = auth()->check()
+            ? auth()->user()->bookmarks()
+                ->where('bookmarkable_type', Exercise::class)
+                ->where('bookmarkable_id', $exercise->id)
+                ->exists()
+            : false;
 
         return $this->success($exercise);
     }

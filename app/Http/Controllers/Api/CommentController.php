@@ -9,8 +9,11 @@ use App\Models\Article;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 class CommentController extends BaseApiController
 {
+    use AuthorizesRequests;
     public function store(CommentRequest $request): JsonResponse
     {
         $commentableType = $request->commentable_type;

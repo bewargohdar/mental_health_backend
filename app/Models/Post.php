@@ -30,6 +30,7 @@ class Post extends Model
     protected function casts(): array
     {
         return [
+            'user_id' => 'integer',
             'category' => ContentCategory::class,
             'is_anonymous' => 'boolean',
             'is_approved' => 'boolean',
