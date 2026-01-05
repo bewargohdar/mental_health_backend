@@ -13,6 +13,7 @@ class DoctorAvailability extends Model
     protected $fillable = [
         'doctor_id',
         'day_of_week',
+        'specific_date',
         'start_time',
         'end_time',
         'slot_duration',
@@ -23,6 +24,7 @@ class DoctorAvailability extends Model
     {
         return [
             'day_of_week' => 'integer',
+            'specific_date' => 'date',
             'start_time' => 'datetime:H:i',
             'end_time' => 'datetime:H:i',
             'slot_duration' => 'integer',

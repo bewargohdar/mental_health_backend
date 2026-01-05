@@ -32,8 +32,13 @@ class DoctorAvailabilityResource extends Resource
                     )
                     ->required()
                     ->searchable(),
+                
+                Forms\Components\DatePicker::make('specific_date')
+                    ->label('Specific Date (optional)')
+                    ->helperText('Leave empty for recurring weekly schedule'),
                     
                 Forms\Components\Select::make('day_of_week')
+                    ->label('Day of Week (for recurring)')
                     ->options([
                         0 => 'Sunday',
                         1 => 'Monday',
@@ -43,7 +48,7 @@ class DoctorAvailabilityResource extends Resource
                         5 => 'Friday',
                         6 => 'Saturday',
                     ])
-                    ->required(),
+                    ->helperText('Used when no specific date is set'),
                     
                 Forms\Components\TimePicker::make('start_time')
                     ->required()
@@ -75,10 +80,16 @@ class DoctorAvailabilityResource extends Resource
                     ->label('Doctor')
                     ->sortable()
                     ->searchable(),
+                
+                Tables\Columns\TextColumn::make('specific_date')
+                    ->label('Date')
+                    ->date()
+                    ->placeholder('Recurring')
+                    ->sortable(),
                     
                 Tables\Columns\TextColumn::make('day_of_week')
                     ->label('Day')
-                    ->formatStateUsing(fn ($state) => $days[$state] ?? $state)
+                    ->formatStateUsing(fn ($state) => $days[$state] ?? '-')
                     ->sortable(),
                     
                 Tables\Columns\TextColumn::make('start_time')
@@ -109,7 +120,7 @@ class DoctorAvailabilityResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('doctor_id');
+            ->defaultSort('specific_date', 'desc');
     }
 
     public static function getPages(): array
