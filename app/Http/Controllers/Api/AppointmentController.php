@@ -245,4 +245,5 @@ class AppointmentController extends BaseApiController
 
         return $this->success(['slots' => $slots]);
     }
+
 }
