@@ -53,10 +53,10 @@ class PostController extends BaseApiController
             'content' => $request->content,
             'category' => $request->category,
             'is_anonymous' => $request->is_anonymous ?? false,
-            'is_approved' => false, // Requires moderation
+            'is_approved' => true, // Auto-approve for demo
         ]);
 
-        return $this->created($post, 'Post submitted for review.');
+        return $this->created($post, 'Post published successfully.');
     }
 
     public function show(Post $post): JsonResponse
@@ -89,10 +89,10 @@ class PostController extends BaseApiController
             'content' => $request->content,
             'category' => $request->category,
             'is_anonymous' => $request->is_anonymous ?? $post->is_anonymous,
-            'is_approved' => false, // Re-submit for moderation
+            'is_approved' => true, // Auto-approve for demo
         ]);
 
-        return $this->success($post, 'Post updated and resubmitted for review.');
+        return $this->success($post, 'Post updated successfully.');
     }
 
     public function destroy(Post $post): JsonResponse
