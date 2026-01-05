@@ -13,8 +13,11 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 class AppointmentController extends BaseApiController
 {
+    use AuthorizesRequests;
     public function index(Request $request): JsonResponse
     {
         $user = auth()->user();
