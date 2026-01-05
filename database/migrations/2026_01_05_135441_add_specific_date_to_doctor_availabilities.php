@@ -6,23 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('doctor_availabilities', function (Blueprint $table) {
-            //
+            $table->date('specific_date')->nullable()->after('day_of_week');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('doctor_availabilities', function (Blueprint $table) {
-            //
+            $table->dropColumn('specific_date');
         });
     }
 };
