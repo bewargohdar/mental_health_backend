@@ -224,12 +224,12 @@ class AppointmentController extends BaseApiController
 
         while ($startTime < $endTime) {
             $slotTime = $startTime->format('H:i');
-            if (!in_array($slotTime, $bookedSlots)) {
-                $slots[] = [
-                    'time' => $slotTime,
-                    'datetime' => $startTime->toDateTimeString(),
-                ];
-            }
+            $isBooked = in_array($slotTime, $bookedSlots);
+            $slots[] = [
+                'time' => $slotTime,
+                'datetime' => $startTime->toDateTimeString(),
+                'available' => !$isBooked,
+            ];
             $startTime->addMinutes($availability->slot_duration);
         }
 
