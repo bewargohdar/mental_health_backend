@@ -70,7 +70,17 @@ class AppointmentController extends BaseApiController
             return $this->error('Doctor is not available at this time.', 422);
         }
 
-        // Check for conflicts
+        // Check if user already has an active appointment with this doctor
+        $existingAppointment = Appointment::where('patient_id', auth()->id())
+            ->where('doctor_id', $request->doctor_id)
+            ->whereIn('status', [AppointmentStatus::PENDING, AppointmentStatus::CONFIRMED])
+            ->first();
+
+        if ($existingAppointment) {
+            return $this->error('You already have an active appointment with this doctor. Please complete or cancel it before booking a new one.', 422);
+        }
+
+        // Check for conflicts (same time slot already booked)
         $conflict = Appointment::where('doctor_id', $request->doctor_id)
             ->where('scheduled_at', $scheduledAt)
             ->whereNotIn('status', [AppointmentStatus::CANCELLED, AppointmentStatus::COMPLETED])
