@@ -22,49 +22,26 @@ class ProgressController extends BaseApiController
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
 
-        // Mood entries this week
         $moodEntries = MoodEntry::where('user_id', $user->id)
             ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
             ->get();
 
-        // Posts this week
-        $postsCount = Post::where('user_id', $user->id)
-            ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
-            ->count();
-
-        // Exercises completed this week
-        $exercisesCompleted = ExerciseCompletion::where('user_id', $user->id)
-            ->whereBetween('completed_at', [$startOfWeek, $endOfWeek])
-            ->count();
-
-        // Appointments this week
-        $appointmentsCount = Appointment::where('patient_id', $user->id)
-            ->whereBetween('scheduled_at', [$startOfWeek, $endOfWeek])
-            ->count();
-
-        // Daily mood breakdown
-        $dailyMoods = $moodEntries->groupBy(function ($entry) {
-            return $entry->created_at->format('l'); // Day name
-        })->map(function ($entries) {
-            return [
-                'count' => $entries->count(),
-                'moods' => $entries->pluck('mood_type')->unique()->values(),
+        // Build chart data array
+        $data = [];
+        $daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        
+        for ($i = 0; $i < 7; $i++) {
+            $dayDate = $startOfWeek->copy()->addDays($i);
+            $dayEntries = $moodEntries->filter(fn($e) => Carbon::parse($e->created_at)->isSameDay($dayDate));
+            
+            $data[] = [
+                'day' => $daysOfWeek[$i],
+                'mood' => round($dayEntries->avg('intensity') ?? 0, 1),
+                'entries' => $dayEntries->count(),
             ];
-        });
+        }
 
-        // Streak calculation (consecutive days with mood entry)
-        $streak = $this->calculateMoodStreak($user->id);
-
-        return $this->success([
-            'week_start' => $startOfWeek->toDateString(),
-            'week_end' => $endOfWeek->toDateString(),
-            'mood_entries_count' => $moodEntries->count(),
-            'posts_count' => $postsCount,
-            'exercises_completed' => $exercisesCompleted,
-            'appointments_count' => $appointmentsCount,
-            'daily_moods' => $dailyMoods,
-            'mood_streak' => $streak,
-        ], 'Weekly progress retrieved');
+        return $this->success($data, 'Weekly progress retrieved');
     }
 
     public function weeklyChart(): JsonResponse
