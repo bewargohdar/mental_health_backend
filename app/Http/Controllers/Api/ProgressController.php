@@ -67,6 +67,29 @@ class ProgressController extends BaseApiController
         ], 'Weekly progress retrieved');
     }
 
+    public function weeklyChart(): JsonResponse
+    {
+        $user = auth()->user();
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $moodEntries = MoodEntry::where('user_id', $user->id)
+            ->whereBetween('created_at', [$startOfWeek, $startOfWeek->copy()->addDays(6)])
+            ->get();
+
+        $data = [];
+        $daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        for ($i = 0; $i < 7; $i++) {
+            $dayDate = $startOfWeek->copy()->addDays($i);
+            $dayEntries = $moodEntries->filter(fn($e) => Carbon::parse($e->created_at)->isSameDay($dayDate));
+            $data[] = [
+                'day' => $daysOfWeek[$i],
+                'mood' => round($dayEntries->avg('intensity') ?? 0, 1),
+                'entries' => $dayEntries->count(),
+            ];
+        }
+
+        return $this->success($data, 'Weekly chart data retrieved');
+    }
+
     /**
      * Get overall user progress overview
      */
@@ -116,6 +139,10 @@ class ProgressController extends BaseApiController
             'frequent_moods' => $frequentMoods,
             'average_mood_intensity' => round($avgIntensity ?? 0, 1),
             'mood_streak' => $this->calculateMoodStreak($user->id),
+            'current_streak' => $this->calculateMoodStreak($user->id),
+            'total_entries' => $totalMoodEntries,
+            'average_mood' => round($avgIntensity ?? 0, 1),
+            'mood_change' => 0,
         ], 'Progress overview retrieved');
     }
 

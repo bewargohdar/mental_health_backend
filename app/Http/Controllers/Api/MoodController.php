@@ -98,13 +98,80 @@ class MoodController extends BaseApiController
             ],
         ];
 
-        // Weekly averages
-        $stats['weekly_trends'] = $entries->groupBy(fn($e) => $e->recorded_at->startOfWeek()->toDateString())
-            ->map(fn($week) => [
-                'count' => $week->count(),
-                'avg_intensity' => round($week->avg('intensity'), 1),
-            ]);
+        // Weekly averages for chart
+        $weeklyAverages = [];
+        for ($i = 3; $i >= 0; $i--) {
+            $weekStart = now()->subWeeks($i)->startOfWeek();
+            $weekEnd = now()->subWeeks($i)->endOfWeek();
+            $weekEntries = $entries->filter(fn($e) => $e->recorded_at->between($weekStart, $weekEnd));
+            $weeklyAverages[] = round($weekEntries->avg('intensity') ?? 0, 1);
+        }
+        $stats['weekly_averages'] = $weeklyAverages;
+
+        // Calculate average mood (intensity)
+        $stats['average_mood'] = round($entries->avg('intensity'), 1);
 
         return $this->success($stats);
+    }
+
+    public function overview(Request $request): JsonResponse
+    {
+        $entries = auth()->user()->moodEntries()->orderBy('recorded_at', 'desc')->get();
+
+        // Calculate streak
+        $streak = 0;
+        $currentDate = now()->startOfDay();
+        $dates = $entries->pluck('recorded_at')->map(fn($d) => Carbon::parse($d)->startOfDay()->toDateString())->unique()->sort()->reverse()->values();
+        
+        foreach ($dates as $date) {
+            $dateCarbon = Carbon::parse($date);
+            if ($dateCarbon->isSameDay($currentDate) || $dateCarbon->isSameDay($currentDate->subDay())) {
+                $streak++;
+                $currentDate = $dateCarbon->copy()->subDay();
+            } else {
+                break;
+            }
+        }
+
+        // Calculate mood change (last entry vs average)
+        $lastEntry = $entries->first();
+        $avgMood = round($entries->avg('intensity'), 1);
+        $moodChange = $lastEntry ? round($lastEntry->intensity - $avgMood, 1) : 0;
+
+        return $this->success([
+            'current_streak' => $streak,
+            'total_entries' => $entries->count(),
+            'average_mood' => $avgMood,
+            'mood_change' => $moodChange,
+        ]);
+    }
+
+    public function weekly(Request $request): JsonResponse
+    {
+        $startOfWeek = now()->startOfWeek();
+        $endOfWeek = now()->endOfWeek();
+
+        $entries = auth()->user()->moodEntries()
+            ->whereBetween('recorded_at', [$startOfWeek, $endOfWeek])
+            ->orderBy('recorded_at', 'asc')
+            ->get();
+
+        // Group by day
+        $weeklyData = [];
+        $daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        
+        for ($i = 0; $i < 7; $i++) {
+            $dayDate = $startOfWeek->copy()->addDays($i);
+            $dayEntries = $entries->filter(fn($e) => Carbon::parse($e->recorded_at)->isSameDay($dayDate));
+            
+            $weeklyData[] = [
+                'day' => $daysOfWeek[$i],
+                'date' => $dayDate->toDateString(),
+                'average_mood' => round($dayEntries->avg('intensity') ?? 0, 1),
+                'count' => $dayEntries->count(),
+            ];
+        }
+
+        return $this->success($weeklyData);
     }
 }
