@@ -8,4 +8,11 @@ use Filament\Resources\Pages\ListRecords;
 class ListWellnessTips extends ListRecords
 {
     protected static string $resource = WellnessTipResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            \Filament\Actions\CreateAction::make(),
+        ];
+    }
 }

@@ -33,14 +33,7 @@ class PostResource extends Resource
                             ->required()
                             ->columnSpanFull(),
                         Forms\Components\Select::make('category')
-                            ->options([
-                                'depression' => 'Depression',
-                                'anxiety' => 'Anxiety',
-                                'stress' => 'Stress',
-                                'relationships' => 'Relationships',
-                                'self_care' => 'Self Care',
-                                'general' => 'General',
-                            ]),
+                            ->options(collect(\App\Enums\ContentCategory::cases())->mapWithKeys(fn ($cat) => [$cat->value => $cat->label()])),
                         Forms\Components\Toggle::make('is_approved')
                             ->label('Approved')
                             ->default(true),

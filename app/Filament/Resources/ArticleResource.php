@@ -33,16 +33,7 @@ class ArticleResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true),
                         Forms\Components\Select::make('category')
-                            ->options([
-                                'depression' => 'Depression',
-                                'anxiety' => 'Anxiety',
-                                'stress' => 'Stress Management',
-                                'relationships' => 'Relationships',
-                                'self_care' => 'Self Care',
-                                'mindfulness' => 'Mindfulness',
-                                'sleep' => 'Sleep & Rest',
-                                'general' => 'General Wellness',
-                            ]),
+                            ->options(collect(\App\Enums\ContentCategory::cases())->mapWithKeys(fn ($cat) => [$cat->value => $cat->label()])),
                         Forms\Components\TextInput::make('reading_time')
                             ->numeric()
                             ->suffix('minutes'),
