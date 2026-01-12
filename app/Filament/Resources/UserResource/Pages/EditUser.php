@@ -32,7 +32,22 @@ class EditUser extends EditRecord
 
     protected function afterSave(): void
     {
+        $this->handleEmailVerification();
         $this->handleDoctorProfile();
+    }
+
+    protected function handleEmailVerification(): void
+    {
+        $record = $this->record;
+        $data = $this->data;
+
+        if (isset($data['email_verified'])) {
+            if ($data['email_verified'] && !$record->email_verified_at) {
+                $record->update(['email_verified_at' => now()]);
+            } elseif (!$data['email_verified'] && $record->email_verified_at) {
+                $record->update(['email_verified_at' => null]);
+            }
+        }
     }
 
     protected function handleDoctorProfile(): void

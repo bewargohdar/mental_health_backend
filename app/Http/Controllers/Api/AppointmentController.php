@@ -188,7 +188,9 @@ class AppointmentController extends BaseApiController
             'date' => ['required', 'date', 'after_or_equal:today'],
         ]);
 
-        $date = Carbon::parse($request->date);
+        // Parse the date in the app's timezone to ensure consistency
+        $date = Carbon::parse($request->date)->startOfDay();
+        $dateString = $date->format('Y-m-d');
 
         if (!$doctor->isDoctor()) {
             return $this->error('User is not a doctor.', 404);
@@ -197,8 +199,9 @@ class AppointmentController extends BaseApiController
         // First check for specific date availability, then fall back to recurring day_of_week
         $availability = DoctorAvailability::where('doctor_id', $doctor->id)
             ->where('is_active', true)
-            ->where(function ($query) use ($date) {
-                $query->whereDate('specific_date', $date->toDateString())
+            ->where(function ($query) use ($date, $dateString) {
+                // Compare using raw date string to avoid timezone conversion issues
+                $query->whereRaw("DATE(specific_date) = ?", [$dateString])
                     ->orWhere(function ($q) use ($date) {
                         $q->whereNull('specific_date')
                           ->where('day_of_week', $date->dayOfWeek);

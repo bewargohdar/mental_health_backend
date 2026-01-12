@@ -53,6 +53,15 @@ class UserResource extends Resource
                             ->columnSpanFull(),
                         Forms\Components\Toggle::make('is_active')
                             ->default(true),
+                        Forms\Components\Toggle::make('email_verified')
+                            ->label('Email Verified')
+                            ->default(false)
+                            ->dehydrated(false)
+                            ->afterStateHydrated(function ($component, $record) {
+                                if ($record) {
+                                    $component->state($record->email_verified_at !== null);
+                                }
+                            }),
                     ])
                     ->columns(2),
                 Forms\Components\Section::make('Roles')

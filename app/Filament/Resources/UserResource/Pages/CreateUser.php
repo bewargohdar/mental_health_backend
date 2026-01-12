@@ -13,7 +13,18 @@ class CreateUser extends CreateRecord
 
     protected function afterCreate(): void
     {
+        $this->handleEmailVerification();
         $this->handleDoctorProfile();
+    }
+
+    protected function handleEmailVerification(): void
+    {
+        $record = $this->record;
+        $data = $this->data;
+
+        if (isset($data['email_verified']) && $data['email_verified']) {
+            $record->update(['email_verified_at' => now()]);
+        }
     }
 
     protected function handleDoctorProfile(): void

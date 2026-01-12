@@ -36,6 +36,31 @@ class ProfileController extends BaseApiController
     }
 
     /**
+     * Upload user avatar
+     */
+    public function uploadAvatar(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $request->validate([
+            'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+        ]);
+
+        $user = auth()->user();
+
+        // Delete old avatar if exists
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        $path = $request->file('avatar')->store('avatars', 'public');
+        $user->update(['avatar' => $path]);
+
+        return $this->success(
+            $user->fresh()->load(['roles', 'doctorProfile']),
+            'Avatar uploaded successfully'
+        );
+    }
+
+    /**
      * Get user profile
      */
     public function show(): JsonResponse

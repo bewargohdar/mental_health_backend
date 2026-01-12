@@ -79,8 +79,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('profile')->group(function () {
         Route::get('/', [ProfileController::class, 'show']);
         Route::put('/', [ProfileController::class, 'update']);
-        Route::post('language/{language}', [ProfileController::class, 'updateLanguage']);
+        Route::post('avatar', [ProfileController::class, 'uploadAvatar']);
         Route::delete('avatar', [ProfileController::class, 'deleteAvatar']);
+        Route::post('language/{language}', [ProfileController::class, 'updateLanguage']);
     });
 
     // User Progress (for Home page)
