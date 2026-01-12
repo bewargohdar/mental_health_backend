@@ -6,6 +6,7 @@ use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -33,6 +34,16 @@ class UserResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
+                        Forms\Components\TextInput::make('password')
+                            ->password()
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (?string $state) => filled($state))
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('password_confirmation')
+                            ->password()
+                            ->requiredWith('password')
+                            ->same('password')
+                            ->dehydrated(false),
                         Forms\Components\TextInput::make('phone')
                             ->tel()
                             ->maxLength(20),
@@ -49,8 +60,50 @@ class UserResource extends Resource
                         Forms\Components\Select::make('roles')
                             ->relationship('roles', 'name')
                             ->multiple()
-                            ->preload(),
+                            ->preload()
+                            ->live(),
                     ]),
+                Forms\Components\Section::make('Doctor Profile')
+                    ->schema([
+                        Forms\Components\TextInput::make('doctorProfile.specialization')
+                            ->label('Specialization')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('doctorProfile.license_number')
+                            ->label('License Number')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('doctorProfile.experience_years')
+                            ->label('Years of Experience')
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(50),
+                        Forms\Components\TextInput::make('doctorProfile.hourly_rate')
+                            ->label('Hourly Rate')
+                            ->numeric()
+                            ->prefix('$')
+                            ->minValue(0),
+                        Forms\Components\TagsInput::make('doctorProfile.qualifications')
+                            ->label('Qualifications')
+                            ->placeholder('Add qualification'),
+                        Forms\Components\TagsInput::make('doctorProfile.languages')
+                            ->label('Languages')
+                            ->placeholder('Add language'),
+                        Forms\Components\Select::make('doctorProfile.consultation_types')
+                            ->label('Consultation Types')
+                            ->multiple()
+                            ->options([
+                                'video' => 'Video Call',
+                                'audio' => 'Audio Call',
+                                'chat' => 'Chat',
+                                'in_person' => 'In Person',
+                            ]),
+                        Forms\Components\Toggle::make('doctorProfile.is_verified')
+                            ->label('Verified Doctor')
+                            ->default(false),
+                    ])
+                    ->columns(2)
+                    ->visible(fn (Get $get): bool => in_array('doctor', $get('roles') ?? []) || in_array(2, $get('roles') ?? [])),
             ]);
     }
 
