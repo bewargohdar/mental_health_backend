@@ -81,6 +81,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/', [ProfileController::class, 'update']);
         Route::post('avatar', [ProfileController::class, 'uploadAvatar']);
         Route::delete('avatar', [ProfileController::class, 'deleteAvatar']);
+        Route::post('password', [ProfileController::class, 'changePassword']);
         Route::post('language/{language}', [ProfileController::class, 'updateLanguage']);
     });
 

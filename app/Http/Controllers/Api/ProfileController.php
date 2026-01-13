@@ -105,4 +105,18 @@ class ProfileController extends BaseApiController
 
         return $this->success(null, 'Avatar deleted successfully');
     }
+
+    /**
+     * Change user password
+     */
+    public function changePassword(\App\Http\Requests\ChangePasswordRequest $request): JsonResponse
+    {
+        $user = auth()->user();
+        
+        $user->update([
+            'password' => bcrypt($request->validated()['new_password'])
+        ]);
+
+        return $this->success(null, 'Password changed successfully');
+    }
 }
