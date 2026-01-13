@@ -53,10 +53,10 @@ class PostController extends BaseApiController
             'content' => $request->content,
             'category' => $request->category,
             'is_anonymous' => $request->is_anonymous ?? false,
-            'is_approved' => true, // Auto-approve for demo
+            'is_approved' => false, // Requires admin approval
         ]);
 
-        return $this->created($post, 'Post published successfully.');
+        return $this->created($post, 'Post submitted successfully. It will be visible after admin approval.');
     }
 
     public function show(Post $post): JsonResponse
@@ -84,15 +84,24 @@ class PostController extends BaseApiController
     {
         $this->authorize('update', $post);
 
+        // Reset approval status when post content is modified
+        $needsReapproval = $request->title !== $post->title || $request->content !== $post->content;
+
         $post->update([
             'title' => $request->title,
             'content' => $request->content,
             'category' => $request->category,
             'is_anonymous' => $request->is_anonymous ?? $post->is_anonymous,
-            'is_approved' => true, // Auto-approve for demo
+            'is_approved' => $needsReapproval ? false : $post->is_approved,
+            'approved_at' => $needsReapproval ? null : $post->approved_at,
+            'approved_by' => $needsReapproval ? null : $post->approved_by,
         ]);
 
-        return $this->success($post, 'Post updated successfully.');
+        $message = $needsReapproval 
+            ? 'Post updated and submitted for re-approval.'
+            : 'Post updated successfully.';
+
+        return $this->success($post, $message);
     }
 
     public function destroy(Post $post): JsonResponse
