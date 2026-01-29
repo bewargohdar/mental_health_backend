@@ -7,10 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Storage;
 
 class Video extends Model
 {
     use HasFactory;
+
+    protected $appends = ['thumbnail_url'];
 
     protected $fillable = [
         'title',
@@ -64,5 +67,14 @@ class Video extends Model
         $minutes = floor($this->duration / 60);
         $seconds = $this->duration % 60;
         return sprintf('%d:%02d', $minutes, $seconds);
+    }
+
+    public function getThumbnailUrlAttribute(): ?string
+    {
+        if (!$this->thumbnail) {
+            return null;
+        }
+        
+        return Storage::disk('public')->url($this->thumbnail);
     }
 }

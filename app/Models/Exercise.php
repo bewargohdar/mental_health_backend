@@ -7,10 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Storage;
 
 class Exercise extends Model
 {
     use HasFactory;
+
+    protected $appends = ['image_full_url'];
 
     protected $fillable = [
         'title',
@@ -63,5 +66,15 @@ class Exercise extends Model
     public function scopeByDifficulty($query, string $difficulty)
     {
         return $query->where('difficulty', $difficulty);
+    }
+
+    // Accessors
+    public function getImageFullUrlAttribute(): ?string
+    {
+        if (!$this->image_url) {
+            return null;
+        }
+        
+        return Storage::disk('public')->url($this->image_url);
     }
 }

@@ -52,12 +52,16 @@ class ExerciseResource extends Resource
                             ->label('Audio Guide URL'),
                         Forms\Components\FileUpload::make('image_url')
                             ->image()
+                            ->disk('public')
                             ->directory('exercises')
+                            ->visibility('public')
                             ->label('Exercise Image')
                             ->imageResizeMode('cover')
                             ->imageCropAspectRatio('16:9')
                             ->imageResizeTargetWidth('1280')
-                            ->imageResizeTargetHeight('720'),
+                            ->imageResizeTargetHeight('720')
+                            ->maxSize(5120)
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
                         Forms\Components\Select::make('author_id')
                             ->relationship('author', 'name')
                             ->searchable()
@@ -78,6 +82,9 @@ class ExerciseResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('image_url')
+                    ->label('Image')
+                    ->circular(),
                 Tables\Columns\TextColumn::make('title')
                     ->searchable()
                     ->limit(40),

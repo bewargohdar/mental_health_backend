@@ -45,7 +45,15 @@ class ArticleResource extends Resource
                             ->columnSpanFull(),
                         Forms\Components\FileUpload::make('featured_image')
                             ->image()
-                            ->directory('articles'),
+                            ->disk('public')
+                            ->directory('articles')
+                            ->visibility('public')
+                            ->imageResizeMode('cover')
+                            ->imageCropAspectRatio('16:9')
+                            ->imageResizeTargetWidth('1280')
+                            ->imageResizeTargetHeight('720')
+                            ->maxSize(5120)
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
                         Forms\Components\Toggle::make('is_published'),
                         Forms\Components\DateTimePicker::make('published_at'),
                     ])

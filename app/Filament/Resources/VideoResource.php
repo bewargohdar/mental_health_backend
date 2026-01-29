@@ -37,7 +37,15 @@ class VideoResource extends Resource
                             ->required(),
                         Forms\Components\FileUpload::make('thumbnail')
                             ->image()
-                            ->directory('video-thumbnails'),
+                            ->disk('public')
+                            ->directory('video-thumbnails')
+                            ->visibility('public')
+                            ->imageResizeMode('cover')
+                            ->imageCropAspectRatio('16:9')
+                            ->imageResizeTargetWidth('1280')
+                            ->imageResizeTargetHeight('720')
+                            ->maxSize(5120)
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
                         Forms\Components\TextInput::make('duration')
                             ->numeric()
                             ->suffix('seconds')

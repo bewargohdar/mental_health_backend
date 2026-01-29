@@ -9,10 +9,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Article extends Model
 {
     use HasFactory, SoftDeletes, SerializesLocalTimezone;
+
+    protected $appends = ['featured_image_url'];
 
     protected $fillable = [
         'title',
@@ -80,5 +83,15 @@ class Article extends Model
                 $article->slug = str($article->title)->slug();
             }
         });
+    }
+
+    // Accessors
+    public function getFeaturedImageUrlAttribute(): ?string
+    {
+        if (!$this->featured_image) {
+            return null;
+        }
+        
+        return Storage::disk('public')->url($this->featured_image);
     }
 }
